@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/zeromicro/go-zero/core/errorx"
 	"github.com/zeromicro/go-zero/core/jsonx"
 	"github.com/zeromicro/go-zero/core/logc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/internal/errcode"
 	"github.com/zeromicro/go-zero/rest/internal/header"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -150,7 +152,10 @@ func doHandleError(w http.ResponseWriter, err error, handler func(error) (int, a
 		} else if errcode.IsGrpcError(err) {
 			// don't unwrap error and get status.Message(),
 			// it hides the rpc error headers.
-			http.Error(w, err.Error(), errcode.CodeFromGrpcError(err))
+			statusError := status.Convert(err)
+			WriteJson(w, http.StatusOK, errorx.NewApiError(int(statusError.Code()), statusError.Message(), http.StatusOK))
+		} else if apiErr, ok := err.(*errorx.ApiError); ok {
+			WriteJson(w, http.StatusOK, apiErr)
 		} else {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}

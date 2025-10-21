@@ -39,6 +39,17 @@ type (
 	}
 )
 
+// NewClientIfEnable returns a Client if enabled.
+func NewClientIfEnable(c RpcClientConf, options ...ClientOption) Client {
+	if c.Target == "" && len(c.Endpoints) == 0 {
+		return nil
+	}
+
+	cli, err := NewClient(c, options...)
+	logx.Must(err)
+	return cli
+}
+
 // MustNewClient returns a Client, exits on any error.
 func MustNewClient(c RpcClientConf, options ...ClientOption) Client {
 	cli, err := NewClient(c, options...)
