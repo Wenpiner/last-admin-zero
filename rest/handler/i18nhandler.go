@@ -1,10 +1,9 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/enums"
+	"github.com/wenpiner/last-admin-common/ctx/langctx"
 )
 
 // I18nHandler returns a middleware that inject accept-language into context
@@ -14,7 +13,7 @@ func I18nHandler(next http.Handler) http.Handler {
 		if lang == "" {
 			lang = "zh-CN"
 		}
-		ctx := context.WithValue(r.Context(), enums.IpKey, lang)
+		ctx := langctx.WithLangToContext(r.Context(), lang)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

@@ -173,9 +173,6 @@ func (ng *engine) buildChainWithNativeMiddlewares(fr featuredRoutes, route Route
 	if ng.conf.Middlewares.ClientIp {
 		chn = chn.Append(handler.IpHandler)
 	}
-	if ng.conf.Middlewares.Tenant {
-		chn = chn.Append(handler.TenantHandler)
-	}
 	return chn
 }
 

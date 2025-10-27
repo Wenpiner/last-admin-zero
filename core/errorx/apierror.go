@@ -96,12 +96,21 @@ const (
 // 基础构造函数
 // ============================================================================
 
-// NewApiError creates a new ApiError with custom business code, message and HTTP status
-func NewApiError(code int, message string, status int) *ApiError {
+// NewApiStatusError creates a new ApiError with custom business code, message and HTTP status
+func NewApiStatusError(code int, message string, status int) *ApiError {
 	return &ApiError{
 		Code:    code,
 		Message: message,
 		Status:  status,
+	}
+}
+
+// NewApiError creates a new ApiError with business code 0 (success) and HTTP status 200 OK
+func NewApiError(code int, message string) *ApiError {
+	return &ApiError{
+		Code:    code,
+		Message: message,
+		Status:  http.StatusOK,
 	}
 }
 

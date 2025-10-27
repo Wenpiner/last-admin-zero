@@ -3,13 +3,16 @@ package handler
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logc"
+	"github.com/zeromicro/go-zero/rest/enums"
 	"github.com/zeromicro/go-zero/rest/internal/response"
 	"github.com/zeromicro/go-zero/rest/token"
+	"google.golang.org/grpc/metadata"
 )
 
 const (
@@ -21,6 +24,9 @@ const (
 	jwtNotBefore   = "nbf"
 	jwtSubject     = "sub"
 	noDetailReason = "no detail reason"
+	jwtRoleId      = "roleId"
+	jwtDeptId      = "deptId"
+	jwtUserId      = "userId"
 )
 
 var (
@@ -72,6 +78,15 @@ func Authorize(secret string, opts ...AuthorizeOption) func(http.Handler) http.H
 			for k, v := range claims {
 				switch k {
 				case jwtAudience, jwtExpire, jwtId, jwtIssueAt, jwtIssuer, jwtNotBefore, jwtSubject:
+				case jwtRoleId:
+					ctx = metadata.AppendToOutgoingContext(ctx, string(enums.RoleKey), v.(string))
+					ctx = context.WithValue(ctx, k, v)
+				case jwtDeptId:
+					ctx = metadata.AppendToOutgoingContext(ctx, string(enums.DeptKey), fmt.Sprintf("%v", v))
+					ctx = context.WithValue(ctx, k, v)
+				case jwtUserId:
+					ctx = metadata.AppendToOutgoingContext(ctx, string(enums.UserKey), v.(string))
+					ctx = context.WithValue(ctx, k, v)
 					// ignore the standard claims
 				default:
 					ctx = context.WithValue(ctx, k, v)

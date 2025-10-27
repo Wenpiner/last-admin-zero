@@ -153,7 +153,7 @@ func doHandleError(w http.ResponseWriter, err error, handler func(error) (int, a
 			// don't unwrap error and get status.Message(),
 			// it hides the rpc error headers.
 			statusError := status.Convert(err)
-			WriteJson(w, http.StatusOK, errorx.NewApiError(int(statusError.Code()), statusError.Message(), http.StatusOK))
+			WriteJson(w, http.StatusOK, errorx.NewApiError(int(statusError.Code()), statusError.Message()))
 		} else if apiErr, ok := err.(*errorx.ApiError); ok {
 			WriteJson(w, http.StatusOK, apiErr)
 		} else {
